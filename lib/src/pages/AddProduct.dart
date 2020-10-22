@@ -4,14 +4,16 @@ import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
 import 'package:flutter_ecommerce_app/src/widgets/extentions.dart';
 
 
-class ProfilePage extends StatefulWidget {
+class AddProduct extends StatefulWidget {
   @override
   MapScreenState createState() => MapScreenState();
+   
 }
 
-class MapScreenState extends State<ProfilePage>
+class MapScreenState extends State<AddProduct>
     with SingleTickerProviderStateMixin {
   bool _status = true;
+  int _value =1;
   final FocusNode myFocusNode = FocusNode();
 
   @override
@@ -50,7 +52,7 @@ class MapScreenState extends State<ProfilePage>
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 25.0),
-                              child: new Text('PROFILE',
+                              child: new Text('Add Product',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0,
@@ -74,7 +76,7 @@ class MapScreenState extends State<ProfilePage>
                                   shape: BoxShape.circle,
                                   image: new DecorationImage(
                                     image: new ExactAssetImage(
-                                        'assets/as.png'),
+                                        'assets/add.png'),
                                     fit: BoxFit.cover,
                                   ),
                                 )),
@@ -120,7 +122,7 @@ class MapScreenState extends State<ProfilePage>
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
                                   new Text(
-                                    'Personal Information',
+                                    'Product Information',
                                     style: TextStyle(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.bold),
@@ -165,7 +167,7 @@ class MapScreenState extends State<ProfilePage>
                               new Flexible(
                                 child: new TextField(
                                   decoration: const InputDecoration(
-                                    hintText: "Enter Your Name",
+                                    hintText: "Enter Name of Product",
                                   ),
                                   enabled: !_status,
                                   autofocus: !_status,
@@ -174,6 +176,70 @@ class MapScreenState extends State<ProfilePage>
                               ),
                             ],
                           )),
+                          Padding(
+                          padding: EdgeInsets.only(
+                              left: 25.0, right: 25.0, top: 25.0),
+                          child: new Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              new Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  new Text(
+                                    'Category',
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )),
+                      Padding(
+                          padding: EdgeInsets.only(
+                              left: 25.0, right: 25.0, top: 25.0),
+                              
+                          child: new Row(
+                            mainAxisSize: MainAxisSize.max,
+                            
+                            children: <Widget>[
+                              new Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                   DropdownButton( 
+                                 value: _value,iconSize: 45,
+              items: [
+                DropdownMenuItem(
+                  child: Text("Sneakers"),
+                  value: 1,
+                ),
+                DropdownMenuItem(
+                  child: Text("Jacket"),
+                  value: 2,
+                ),
+                DropdownMenuItem(
+                  child: Text("Watch"),
+                  value: 3
+                ),
+                DropdownMenuItem(
+                    child: Text("Phone"),
+                    value: 4
+                )
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _value = value;
+                });
+              },
+                                  
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )),
+                     
                       Padding(
                           padding: EdgeInsets.only(
                               left: 25.0, right: 25.0, top: 25.0),
@@ -185,7 +251,7 @@ class MapScreenState extends State<ProfilePage>
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
                                   new Text(
-                                    'Email ID',
+                                    'Description',
                                     style: TextStyle(
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold),
@@ -203,42 +269,7 @@ class MapScreenState extends State<ProfilePage>
                               new Flexible(
                                 child: new TextField(
                                   decoration: const InputDecoration(
-                                      hintText: "Enter Email ID"),
-                                  enabled: !_status,
-                                ),
-                              ),
-                            ],
-                          )),
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 25.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              new Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  new Text(
-                                    'Mobile',
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )),
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 2.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              new Flexible(
-                                child: new TextField(
-                                  decoration: const InputDecoration(
-                                      hintText: "Enter Mobile Number"),
+                                      hintText: "Enter Description"),
                                   enabled: !_status,
                                 ),
                               ),
@@ -254,7 +285,7 @@ class MapScreenState extends State<ProfilePage>
                               Expanded(
                                 child: Container(
                                   child: new Text(
-                                    'Pin Code',
+                                    ' Price',
                                     style: TextStyle(
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold),
@@ -287,7 +318,7 @@ class MapScreenState extends State<ProfilePage>
                                   padding: EdgeInsets.only(right: 10.0),
                                   child: new TextField(
                                     decoration: const InputDecoration(
-                                        hintText: "Enter Pin Code"),
+                                        hintText: "Enter Price"),
                                     enabled: !_status,
                                   ),
                                 ),

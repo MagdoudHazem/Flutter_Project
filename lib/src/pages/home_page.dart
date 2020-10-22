@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           SizedBox(width: 20),
-          _icon(Icons.filter_list, color: Colors.black54)
+          _icon(Icons.confirmation_number_outlined, color: Colors.black54)
         ],
       ),
     );

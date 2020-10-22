@@ -7,6 +7,8 @@ import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/widgets/BottomNavigationBar/bottom_navigation_bar.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:flutter_ecommerce_app/src/widgets/extentions.dart';
+import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
+
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.title}) : super(key: key);
@@ -103,11 +105,16 @@ class _MainPageState extends State<MainPage> {
   }
 
   void onBottomIconPressed(int index) {
-    if (index == 0 || index == 1) {
+    if (index == 0 ) {
       setState(() {
         isHomePageSelected = true;
       });
-    } else {
+    
+    }else if (index ==1)
+    {
+      Navigator.of(context).pushNamedAndRemoveUntil(routes.AddProductRoute, (route) => false);
+    }
+     else {
       setState(() {
         isHomePageSelected = false;
       });

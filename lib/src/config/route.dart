@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/pages/AddProduct.dart';
 import 'package:flutter_ecommerce_app/src/pages/Login.dart';
 import 'package:flutter_ecommerce_app/src/pages/ProfilePage%20.dart';
 import 'package:flutter_ecommerce_app/src/pages/mainPage.dart';
@@ -18,7 +19,7 @@ const String MainPageRoute = "/mainPage";
 const String DetailPageRoute="/detail";
 const String LoginPageRoute="/login";
 const String ProfilePageRoute="/profile";
-
+const String AddProductRoute="/addproduct";
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
         if (settings.name.contains('detail')) {
           return CustomRoute<bool>(
@@ -31,6 +32,11 @@ return  CustomRoute<bool>(
         else if (settings.name.contains(ProfilePageRoute)){
           return  CustomRoute<bool>(
               builder: (BuildContext context) => ProfilePage());
+        }
+        else if (settings.name.contains(AddProductRoute))
+        {
+ return  CustomRoute<bool>(
+              builder: (BuildContext context) => AddProduct());
         }
         
          else{
