@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
-import 'package:flutter_ecommerce_app/src/widgets/extentions.dart';
+import 'package:flutter_ecommerce_app/src/data/api_client.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class AddProduct extends StatefulWidget {
@@ -12,14 +14,37 @@ class AddProduct extends StatefulWidget {
 
 class MapScreenState extends State<AddProduct>
     with SingleTickerProviderStateMixin {
+      File _image;
+  final picker = ImagePicker();
   bool _status = true;
-  int _value =1;
+  int _value = 0;
   final FocusNode myFocusNode = FocusNode();
+  final GlobalKey<FormState> formKey = GlobalKey();
+  TextEditingController nameController = TextEditingController();
+    TextEditingController descriptionController = TextEditingController();
+    TextEditingController priceController = TextEditingController();
+    TextEditingController amountController = TextEditingController();
 
+
+  List<String> categories = [
+     "Sneakers","Jacket","Watch",   
+              "Phone"
+  ];
+ 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void dispose(){
+    nameController.dispose();
+    descriptionController.dispose();
+    priceController.dispose();
+    amountController.dispose();
+    myFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -74,29 +99,30 @@ class MapScreenState extends State<AddProduct>
                                 height: 140.0,
                                 decoration: new BoxDecoration(
                                   shape: BoxShape.circle,
-                                  image: new DecorationImage(
-                                    image: new ExactAssetImage(
-                                        'assets/add.png'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                )),
+                                ),
+                                child: _image == null ? Image(image: AssetImage(
+                                        'assets/add.png'),fit: BoxFit.cover,) :  Image.file(_image),
+                              
+                                ),
                           ],
                         ),
-                        Padding(
-                            padding: EdgeInsets.only(top: 90.0, right: 100.0),
-                            child: new Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                new CircleAvatar(
-                                  backgroundColor: Colors.red,
-                                  radius: 25.0,
-                                  child: new Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              ],
-                            )),
+                        GestureDetector(onTap: onChangeImage,
+                                                  child: Padding(
+                              padding: EdgeInsets.only(top: 90.0, right: 100.0),
+                              child: new Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  new CircleAvatar(
+                                    backgroundColor: Colors.red,
+                                    radius: 25.0,
+                                    child: new Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                ],
+                              )),
+                        ),
                       ]),
                     )
                   ],
@@ -106,236 +132,248 @@ class MapScreenState extends State<AddProduct>
                 color: Color(0xffFFFFFF),
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 25.0),
-                  child: new Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 25.0),
-                          child: new Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              new Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  new Text(
-                                    'Product Information',
-                                    style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              new Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  _status ? _getEditIcon() : new Container(),
-                                ],
-                              )
-                            ],
-                          )),
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 25.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              new Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  new Text(
-                                    'Name',
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )),
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 2.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              new Flexible(
-                                child: new TextField(
-                                  decoration: const InputDecoration(
-                                    hintText: "Enter Name of Product",
-                                  ),
-                                  enabled: !_status,
-                                  autofocus: !_status,
-
+                  child: Form(
+                    key: formKey,
+                      child: new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 25.0),
+                            child: new Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                new Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    new Text(
+                                      'Product Information',
+                                      style: TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          )),
-                          Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 25.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              new Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  new Text(
-                                    'Category',
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
+                                new Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    _status ? _getEditIcon() : new Container(),
+                                  ],
+                                )
+                              ],
+                            )),
+                        Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 25.0),
+                            child: new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                new Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    new Text(
+                                      'Name',
+                                      style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )),
+                        Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 2.0),
+                            child: new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                new Flexible(
+                                  child: new TextFormField(
+                                    controller: nameController,
+                                    validator: (value) {
+
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      hintText: "Enter Name of Product",
+                                    ),
+                                    enabled: !_status,
+                                    autofocus: !_status,
+
                                   ),
-                                ],
-                              ),
-                            ],
-                          )),
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 25.0),
+                                ),
+                              ],
+                            )),
+                            Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 25.0),
+                            child: new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                new Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    new Text(
+                                      'Category',
+                                      style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )),
+                        Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 25.0),
+                                
+                            child: new Row(
+                              mainAxisSize: MainAxisSize.max,
                               
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            
-                            children: <Widget>[
-                              new Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                   DropdownButton( 
-                                 value: _value,iconSize: 45,
+                              children: <Widget>[
+                                new Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                     DropdownButton( 
+                                   value: _value,iconSize: 45,
               items: [
                 DropdownMenuItem(
-                  child: Text("Sneakers"),
-                  value: 1,
+                    child: Text("Sneakers"),
+                    value: 0,
                 ),
                 DropdownMenuItem(
-                  child: Text("Jacket"),
-                  value: 2,
+                    child: Text("Jacket"),
+                    value: 1,
                 ),
                 DropdownMenuItem(
-                  child: Text("Watch"),
-                  value: 3
+                    child: Text("Watch"),
+                    value: 2
                 ),
                 DropdownMenuItem(
-                    child: Text("Phone"),
-                    value: 4
+                      child: Text("Phone"),
+                      value: 3
                 )
               ],
               onChanged: (value) {
                 setState(() {
-                  _value = value;
+                    _value = value;
                 });
               },
-                                  
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )),
-                     
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 25.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              new Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  new Text(
-                                    'Description',
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )),
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 2.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              new Flexible(
-                                child: new TextField(
-                                  decoration: const InputDecoration(
-                                      hintText: "Enter Description"),
-                                  enabled: !_status,
+                                    
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          )),
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 25.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                child: Container(
-                                  child: new Text(
-                                    ' Price',
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                              ],
+                            )),
+                       
+                        Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 25.0),
+                            child: new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                new Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    new Text(
+                                      'Description',
+                                      style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
-                                flex: 2,
-                              ),
-                              Expanded(
-                                child: Container(
-                                  child: new Text(
-                                    'Country',
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                flex: 2,
-                              ),
-                            ],
-                          )),
-                      Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25.0, top: 2.0),
-                          child: new Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Flexible(
-                                child: Padding(
-                                  padding: EdgeInsets.only(right: 10.0),
-                                  child: new TextField(
+                              ],
+                            )),
+                        Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 2.0),
+                            child: new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                new Flexible(
+                                  child: new TextFormField(
+                                    controller: descriptionController,
                                     decoration: const InputDecoration(
-                                        hintText: "Enter Price"),
+                                        hintText: "Enter Description"),
                                     enabled: !_status,
                                   ),
                                 ),
-                                flex: 2,
-                              ),
-                              Flexible(
-                                child: new TextField(
-                                  decoration: const InputDecoration(
-                                      hintText: "Enter Country"),
-                                  enabled: !_status,
+                              ],
+                            )),
+                        Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 25.0),
+                            child: new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Container(
+                                    child: new Text(
+                                      ' Price',
+                                      style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  flex: 2,
                                 ),
-                                flex: 2,
-                              ),
-                            ],
-                          )),
-                      !_status ? _getActionButtons() : new Container(),
-                    ],
+                                Expanded(
+                                  child: Container(
+                                    child: new Text(
+                                      'Amount',
+                                      style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  flex: 2,
+                                ),
+                              ],
+                            )),
+                        Padding(
+                            padding: EdgeInsets.only(
+                                left: 25.0, right: 25.0, top: 2.0),
+                            child: new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Flexible(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: new TextFormField( controller: priceController,
+
+                                      decoration: const InputDecoration(
+                                          hintText: "Enter Price"),
+                                      enabled: !_status,
+                                    ),
+                                  ),
+                                  flex: 2,
+                                ),
+                                Flexible(
+                                  child: new TextFormField(
+                                                                        controller: amountController,
+
+                                    decoration: const InputDecoration(
+                                        hintText: "Enter Amount"),
+                                    enabled: !_status,
+                                  ),
+                                  flex: 2,
+                                ),
+                              ],
+                            )),
+                        !_status ? _getActionButtons() : new Container(),
+                      ],
+                    ),
                   ),
                 ),
               )
@@ -346,12 +384,7 @@ class MapScreenState extends State<AddProduct>
     ));
   }
 
-  @override
-  void dispose() {
-    // Clean up the controller when the Widget is disposed
-    myFocusNode.dispose();
-    super.dispose();
-  }
+
 
   Widget _getActionButtons() {
     return Padding(
@@ -368,7 +401,23 @@ class MapScreenState extends State<AddProduct>
                 child: new Text("Save"),
                 textColor: Colors.white,
                 color: Colors.green,
-                onPressed: () {
+                onPressed: () async {
+                  
+                  if(formKey.currentState.validate()){
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    ApiClient apiClient = ApiClient();
+                      Map<String,dynamic> product = {
+                        "nom": nameController.text,
+                        "description":descriptionController.text,
+                        "prix":priceController.text,
+                        "stock":amountController.text,
+                        "category":categories[_value],
+                        "iduser": prefs.getInt("iduser")
+                      };
+                      // ToDo call service
+                      bool isSaved = await apiClient.saveProduct(product);
+                      print("isSaved :: ${isSaved}");
+                  }
                   setState(() {
                     _status = true;
                     FocusScope.of(context).requestFocus(new FocusNode());
@@ -423,4 +472,52 @@ class MapScreenState extends State<AddProduct>
       },
     );
   }
+  onChangeImage(){
+      showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc){
+          return Container(
+            child: new Wrap(
+            children: <Widget>[
+new ListTile(
+            leading: new Icon(Icons.image),
+            title: new Text('Gallery'),
+            onTap: ()   async {
+              Navigator.of(context).pop();
+                final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+                setState(() {
+                  if (pickedFile != null) {
+                    _image = File(pickedFile.path);
+                  } else {
+                    print('No image selected.');
+                  }
+                });
+
+            }         
+          ),
+          new ListTile(
+            leading: new Icon(Icons.camera_alt),
+            title: new Text('Camera'),
+            onTap: ()  async {
+              Navigator.of(context).pop();
+                final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+                setState(() {
+                  if (pickedFile != null) {
+                    _image = File(pickedFile.path);
+                  } else {
+                    print('No image selected.');
+                  }
+                });
+            },          
+          ),
+            ],
+          ),
+          );
+      }
+    );
+
+  }
+  
 }

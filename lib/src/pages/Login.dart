@@ -1,5 +1,9 @@
 import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/data/api_client.dart';
+import 'package:flutter_ecommerce_app/src/model/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class Login extends StatefulWidget {
 
@@ -21,6 +25,7 @@ class LoginState extends State<Login> {
     TextEditingController emailController =TextEditingController();
     TextEditingController passwordController=TextEditingController();
     GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+    dynamic getuser;
 
     Widget emailField() {
       return TextFormField(
@@ -54,10 +59,15 @@ class LoginState extends State<Login> {
           child: MaterialButton(
             minWidth: MediaQuery.of(context).size.width,
             padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-            onPressed: () {
+            onPressed: () async {
               
               if(emailController.text == "a" && passwordController.text =="a"){
+                 SharedPreferences prefs = await SharedPreferences.getInstance();
+                 prefs.setInt("iduser", 1);
+                  ApiClient apiClient = ApiClient();
+             //    getuser =await apiClient.getUserByemail("hh@gmail.com");
  Navigator.of(context).pushNamedAndRemoveUntil(routes.MainPageRoute, (route) => false);
+
               }
               else {
                 scaffoldKey.currentState.showSnackBar(
@@ -101,34 +111,36 @@ class LoginState extends State<Login> {
         return Scaffold(
           key: scaffoldKey,
           body: Center(
-            child: Container(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(36.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 155.0,
-                      child: Image.asset(
-                        "assets/logo.png",
-                        fit: BoxFit.contain,
+            child: SingleChildScrollView(
+                          child: Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(36.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        height: 155.0,
+                        child: Image.asset(
+                          "assets/logo.png",
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 45.0),
-                    emailField(),
-                    SizedBox(height: 25.0),
-                    passwordField(),
-                    SizedBox(
-                      height: 35.0,
-                    ),
-                    loginButon(),
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    registerButon(),
-                  ],
+                      SizedBox(height: 45.0),
+                      emailField(),
+                      SizedBox(height: 25.0),
+                      passwordField(),
+                      SizedBox(
+                        height: 35.0,
+                      ),
+                      loginButon(),
+                      SizedBox(
+                        height: 15.0,
+                      ),
+                      registerButon(),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -21,16 +21,17 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   bool isHomePageSelected = true;
+  final GlobalKey<ScaffoldState> scaffoldkey =GlobalKey();
   Widget _appBar() {
     return Container(
       padding: AppTheme.padding,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          RotatedBox(
-            quarterTurns: 4,
-            child: _icon(Icons.sort, color: Colors.black54),
-          ),
+          IconButton(icon: Icon(Icons.menu),color: Colors.black54,onPressed: (){
+              print("ssssssssss");
+              scaffoldkey.currentState.openDrawer();
+              },),
           ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(13)),
             child: Container(
@@ -52,8 +53,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _icon(IconData icon, {Color color = LightColor.iconColor}) {
-    return Container(
-      
+
+    return  
+      Container(
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(13)),
@@ -65,7 +67,7 @@ class _MainPageState extends State<MainPage> {
         color: color,
       ),
   
-    ).ripple(() {}, borderRadius: BorderRadius.all(Radius.circular(13)));
+    );
    
   }
 
@@ -123,7 +125,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(key: scaffoldkey,
        drawer: NavDrawer(),
       body: SafeArea(
         child: Stack(
