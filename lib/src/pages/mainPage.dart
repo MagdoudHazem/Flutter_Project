@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/pages/NavDrawer.dart';
 import 'package:flutter_ecommerce_app/src/pages/home_page.dart';
+import 'package:flutter_ecommerce_app/src/pages/myproduct.dart';
 import 'package:flutter_ecommerce_app/src/pages/shopping_cart_page.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
@@ -18,10 +19,19 @@ class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
-
+ 
 class _MainPageState extends State<MainPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+        bodywidget=MyHomePage();
+
+  }
   bool isHomePageSelected = true;
+  bool ismyproduct =false;
   final GlobalKey<ScaffoldState> scaffoldkey =GlobalKey();
+  Widget bodywidget;
   Widget _appBar() {
     return Container(
       padding: AppTheme.padding,
@@ -90,6 +100,11 @@ class _MainPageState extends State<MainPage> {
                   fontSize: 27,
                   fontWeight: FontWeight.w700,
                 ),
+                  TitleText(
+                  text: ismyproduct ? 'Products' : 'Cart',
+                  fontSize: 27,
+                  fontWeight: FontWeight.w700,
+                ),
               ],
             ),
             Spacer(),
@@ -109,16 +124,23 @@ class _MainPageState extends State<MainPage> {
   void onBottomIconPressed(int index) {
     if (index == 0 ) {
       setState(() {
-        isHomePageSelected = true;
+        bodywidget = MyHomePage();
       });
     
     }else if (index ==1)
     {
       Navigator.of(context).pushNamedAndRemoveUntil(routes.AddProductRoute, (route) => false);
     }
-     else {
+    else if (index ==3)
+    {
+        setState(() {
+        bodywidget = Myproduct();
+      });
+
+    }
+     else if (index==2) {
       setState(() {
-        isHomePageSelected = false;
+        bodywidget = ShoppingCartPage();
       });
     }
   }
@@ -154,12 +176,7 @@ class _MainPageState extends State<MainPage> {
                         duration: Duration(milliseconds: 300),
                         switchInCurve: Curves.easeInToLinear,
                         switchOutCurve: Curves.easeOutBack,
-                        child: isHomePageSelected
-                            ? MyHomePage()
-                            : Align(
-                                alignment: Alignment.topCenter,
-                                child: ShoppingCartPage(),
-                              ),
+                        child: bodywidget
                       ),
                     )
                   ],

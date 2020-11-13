@@ -47,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     AppData.categoryList.forEach((item) {
                       item.isSelected = false;
                     });
+                   
                     model.isSelected = true;
                   });
                 },
@@ -127,10 +128,11 @@ class _MyHomePageState extends State<MyHomePage> {
         physics: BouncingScrollPhysics(),
         dragStartBehavior: DragStartBehavior.down,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+     crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            _search(),
+                        _search(),
+
             _categoryWidget(),
             _productWidget(),
           ],

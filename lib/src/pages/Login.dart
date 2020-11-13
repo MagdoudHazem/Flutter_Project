@@ -60,18 +60,20 @@ class LoginState extends State<Login> {
             minWidth: MediaQuery.of(context).size.width,
             padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
             onPressed: () async {
-              
-              if(emailController.text == "a" && passwordController.text =="a"){
+                ApiClient apiClient = ApiClient();
+                 getuser =await apiClient.getUserByemail("hh@gmail.com");
+                 List <dynamic> map =await apiClient.getMyproduct(1);
+                 dynamic user =getuser[0];
+              if(emailController.text ==user["email"]  && passwordController.text ==user["mdp"]){
                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                 prefs.setInt("iduser", 1);
-                  ApiClient apiClient = ApiClient();
-             //    getuser =await apiClient.getUserByemail("hh@gmail.com");
+                 prefs.setInt("iduser", user["id"]);
+                
  Navigator.of(context).pushNamedAndRemoveUntil(routes.MainPageRoute, (route) => false);
 
               }
               else {
                 scaffoldKey.currentState.showSnackBar(
-                  SnackBar(content: Text("error"),
+                  SnackBar(content: Text("verify your email or your password"),
                   backgroundColor: Colors.red,
                   
                 ));
@@ -95,6 +97,8 @@ class LoginState extends State<Login> {
             minWidth: MediaQuery.of(context).size.width,
             padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
             onPressed: () {
+               Navigator.of(context).pushNamedAndRemoveUntil(routes.RegisterRoute, (route) => false);
+
               
             
                 },

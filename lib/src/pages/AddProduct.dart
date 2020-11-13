@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
 import 'package:flutter_ecommerce_app/src/data/api_client.dart';
@@ -406,17 +408,21 @@ class MapScreenState extends State<AddProduct>
                   if(formKey.currentState.validate()){
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     ApiClient apiClient = ApiClient();
-                      Map<String,dynamic> product = {
-                        "nom": nameController.text,
-                        "description":descriptionController.text,
-                        "prix":priceController.text,
-                        "stock":amountController.text,
-                        "category":categories[_value],
-                        "iduser": prefs.getInt("iduser")
-                      };
-                      // ToDo call service
-                      bool isSaved = await apiClient.saveProduct(product);
-                      print("isSaved :: ${isSaved}");
+                    Map <String,dynamic> product ={
+                      "nom": nameController.text.toString(),
+                        "description":descriptionController.text.toString(),
+                        "prix":priceController.text.toString(),
+                        "stock":amountController.text.toString(),
+                        "category":categories[_value].toString(),
+                        "iduser": prefs.getInt("iduser").toString(),
+                        
+                        "image":base64Encode(_image.readAsBytesSync()),
+                        "filename":_image.path.split('/').last
+                    };
+                        
+                   
+                       bool isSaved = await apiClient.saveProduct(product, _image);
+                    //  print("isSaved :: ${isSaved}");
                   }
                   setState(() {
                     _status = true;
