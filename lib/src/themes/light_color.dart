@@ -9,6 +9,7 @@ class LightColor {
   static const Color skyBlue = Color(0xff2890c8);
   static const Color lightBlue = Color(0xff5c3dff);
   
+  static const Color green = Color.fromARGB(255, 0,128,0);
 
   static const Color orange = Color(0xffE65829);
   static const Color red = Color(0xffF72804);

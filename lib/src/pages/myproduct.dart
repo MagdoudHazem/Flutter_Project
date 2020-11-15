@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/data/api_client.dart';
 import 'package:flutter_ecommerce_app/src/model/data.dart';
 import 'package:flutter_ecommerce_app/src/model/product.dart';
+import 'package:flutter_ecommerce_app/src/model/produit.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
@@ -11,15 +14,40 @@ import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
 class Myproduct extends StatelessWidget {
   const Myproduct({Key key}) : super(key: key);
 
-  Future<Widget> _cartItems() async {
+  Widget _cartItems()  {
                     ApiClient apiClient = ApiClient();
 
-                  final   List <dynamic> map =await apiClient.getMyproduct(1);
+                 
 
-    return Column(children: map.map((x) => _item(x)).toList());
+    return Column(children: AppData.list.map((x) => _item(x)).toList());
   }
+ /* Widget _cartItems()  {
+    ApiClient apiClient = ApiClient();
+    
+    return FutureBuilder<dynamic>(
+      future: apiClient.getMyproduct(1),
+      
+      builder: (BuildContext context, AsyncSnapshot <dynamic>  snapshot) {
+        if(snapshot.hasData){
 
-  Widget _item(dynamic model) {
+     
+         for (var u in jsonDecode(snapshot.data))
+         {
+           Produit pr =  Produit(u["id"],u["nom"],u["category"],u["description"],u["prix"],u["stock"],u["iduser"],u["image"]);
+           AppData.list.add(pr);
+
+         }
+
+         
+          return Column(children:  AppData.list.map((x) => _item(x)).toList());
+        }else {
+          return Container();
+        }
+      },
+    );
+}*/
+
+  Widget _item(Produit model) {
     return Container(
       height: 80,
       child: Row(
@@ -50,15 +78,32 @@ class Myproduct extends StatelessWidget {
                 Positioned(
                   left: -20,
                   bottom: -20,
-                  child: Image.asset(model["image"]),
+                  child: Image.network('http://192.168.1.7:3000/'+model.image,fit: BoxFit.contain,
+        width: 150),
                 )
               ],
             ),
           ),
           Expanded(
               child: ListTile(
+                onLongPress: ()
+                async { 
+                                  ApiClient apiClient = ApiClient();
+bool isdeleted = await apiClient.deleteProduct(model.id) ;
+                  for (var u in AppData.list)
+                {if (u.id ==model.id)
+                {
+                  AppData.list.remove(u);
+
+                }
+
+                }
+
+              _cartItems();
+                  print("deleted");
+                },
                   title: TitleText(
-                    text: model.name,
+                    text: model.nom,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -70,7 +115,7 @@ class Myproduct extends StatelessWidget {
                         fontSize: 12,
                       ),
                       TitleText(
-                        text: model["prix"].toString(),
+                        text: model.prix.toString(),
                         fontSize: 14,
                       ),
                     ],
@@ -83,8 +128,10 @@ class Myproduct extends StatelessWidget {
                         color: LightColor.lightGrey.withAlpha(150),
                         borderRadius: BorderRadius.circular(10)),
                     child: TitleText(
-                      text: 'x${model["id"]}',
-                      fontSize: 12,
+                      text: 'Delete',
+                      color: LightColor.red,
+                      fontSize: 10,
+                      
                     ),
                   )))
         ],
@@ -97,13 +144,13 @@ class Myproduct extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         TitleText(
-          text: '${3} Items',
+          text: '${AppData.list.length} Items',
           color: LightColor.grey,
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
         TitleText(
-          text: '\$${1000}',
+          text: '\$${getPrice()}',
           fontSize: 18,
         ),
       ],
@@ -111,21 +158,22 @@ class Myproduct extends StatelessWidget {
   }
 
  
-  /*double getPrice() {
+  double getPrice() {
     double price = 0;
-    AppData.cartList.forEach((x) {
-      price += x.price * x.id;
+    AppData.list.forEach((x) {
+      price +=double.parse(x.prix)  * x.stock;
     });
     return price;
-  }*/
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return Container(
       padding: AppTheme.padding,
       child: SingleChildScrollView(
         child: Column(
-          children: <Widget>[
+          children:  <Widget>[
+            
             _cartItems(),
             Divider(
               thickness: 1,
@@ -138,4 +186,5 @@ class Myproduct extends StatelessWidget {
       ),
     );
   }
+  
 }

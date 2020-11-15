@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/model/data.dart';
 
 import 'package:flutter_ecommerce_app/src/model/product.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:flutter_ecommerce_app/src/widgets/extentions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -51,6 +53,7 @@ class ProductCard extends StatelessWidget {
               ),
             ),
             Column(
+          mainAxisSize : MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -63,13 +66,14 @@ class ProductCard extends StatelessWidget {
                         radius: 40,
                         backgroundColor: LightColor.orange.withAlpha(40),
                       ),
-                      Image.asset(product.image)
+                      Image.network('http://192.168.1.7:3000/'+product.image,fit: BoxFit.contain,
+        width: 150)
                     ],
                   ),
                 ),
                 // SizedBox(height: 5),
                 TitleText(
-                  text: product.name,
+                  text: product.nom,
                   fontSize: product.isSelected ? 16 : 14,
                 ),
                 TitleText(
@@ -78,15 +82,24 @@ class ProductCard extends StatelessWidget {
                   color: LightColor.orange,
                 ),
                 TitleText(
-                  text: product.price.toString(),
+                  text: product.prix,
                   fontSize: product.isSelected ? 18 : 16,
                 ),
               ],
             ),
           ],
         ),
-      ).ripple(() {
+      ).ripple(() async {
         Navigator.of(context).pushNamed('/detail');
+        AppData.product =Product(product.id, product.nom, product.category, product.description, product.prix, product.stock, product.iduser, product.image, product.isliked, product.isSelected);
+                         SharedPreferences prefs = await SharedPreferences.getInstance();
+                         prefs.setString("image", product.image);
+                         prefs.setString("prix", product.prix);
+                         prefs.setString("nom", product.nom);
+                         prefs.setString("description", product.description);
+
+
+print (product.nom);
         onSelected(product);
       }, borderRadius: BorderRadius.all(Radius.circular(20))),
     );

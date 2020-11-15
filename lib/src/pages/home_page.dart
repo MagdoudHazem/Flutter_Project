@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ).ripple(() {}, borderRadius: BorderRadius.all(Radius.circular(13)));
   }
 
-  Widget _categoryWidget() {
+ /* Widget _categoryWidget() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       width: AppTheme.fullWidth(context),
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
             .toList(),
       ),
     );
-  }
+  }*/
 
   Widget _productWidget() {
     return Container(
@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
                         _search(),
 
-            _categoryWidget(),
+           
             _productWidget(),
           ],
         ),

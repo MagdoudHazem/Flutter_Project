@@ -43,7 +43,8 @@ class ShoppingCartPage extends StatelessWidget {
                 Positioned(
                   left: -20,
                   bottom: -20,
-                  child: Image.asset(model.image),
+                  child: Image.network('http://192.168.1.7:3000/'+model.image,fit: BoxFit.contain,
+        width: 150),
                 )
               ],
             ),
@@ -51,7 +52,7 @@ class ShoppingCartPage extends StatelessWidget {
           Expanded(
               child: ListTile(
                   title: TitleText(
-                    text: model.name,
+                    text: model.nom,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -63,7 +64,7 @@ class ShoppingCartPage extends StatelessWidget {
                         fontSize: 12,
                       ),
                       TitleText(
-                        text: model.price.toString(),
+                        text: model.prix.toString(),
                         fontSize: 14,
                       ),
                     ],
@@ -76,7 +77,7 @@ class ShoppingCartPage extends StatelessWidget {
                         color: LightColor.lightGrey.withAlpha(150),
                         borderRadius: BorderRadius.circular(10)),
                     child: TitleText(
-                      text: 'x${model.id}',
+                      text: 'x${model.stock}',
                       fontSize: 12,
                     ),
                   )))
@@ -123,7 +124,7 @@ class ShoppingCartPage extends StatelessWidget {
   double getPrice() {
     double price = 0;
     AppData.cartList.forEach((x) {
-      price += x.price * x.id;
+      price +=int.parse(x.prix)  * x.stock;
     });
     return price;
   }

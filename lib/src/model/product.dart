@@ -1,10 +1,13 @@
 class Product{
   int id;
-  String name ;
+  String nom ;
   String category ;
-  String image ;
-  double price ;
+  String description ;
+  String prix;
+   int stock;
+   int iduser;
+   String image;
   bool isliked ;
   bool isSelected ;
-  Product({this.id,this.name, this.category, this.price, this.isliked,this.isSelected = false,this.image});
+  Product(this.id,this.nom, this.category, this.description, this.prix,this.stock,this.iduser,this.image,this.isliked,this.isSelected );
 }

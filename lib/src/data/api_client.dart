@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter_ecommerce_app/src/model/data.dart';
 import 'package:flutter_ecommerce_app/src/model/product.dart';
 import 'package:flutter_ecommerce_app/src/model/produit.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -45,8 +46,21 @@ class ApiClient {
       return false;
     }
   }
+Future<bool>deleteProduct(int id) async
+{
+final url ="/produit/delete/";
+try{
+        baseDio.options.headers['content-Type']='application/json';
+              Response response = await baseDio.delete(this.baseUrl+url+id.toString());
+              return true;
 
-  Future <dynamic>saveUser(Map<String,dynamic> user)
+
+}on DioError catch(e){
+      print(e.error);
+      return false;
+    }
+}
+  Future <bool>saveUser(Map<String,dynamic> user)
   async {
 
     final url ="/user/add";
@@ -66,22 +80,48 @@ class ApiClient {
   Future<dynamic> getMyproduct(int iduser)async {
     final url ="/myproduct/";
     try{
-      iduser=1;
             baseDio.options.headers['content-Type']='application/json';
       Response <String> response = await baseDio.get(this.baseUrl+url+iduser.toString());
       String data =response.data ;
   
        List<dynamic>  map=jsonDecode(data) ;
-       print (map.length.toString());
-       for (var i=0 ;i<map.length;i++){
- dynamic obj1 = map[i];
-         print (obj1["nom"]);
 
-       }
+       print (map.length.toString());
+      /* for (var i=0 ;i<map.length;i++){
+ dynamic obj1 = map[i];
+         print ("//////////////////////////"+obj1["nom"]);
+        
+
+       }*/
+        for (var u in map)
+         {
+           Produit pr =  Produit(u["id"],u["nom"],u["category"],u["description"],u["prix"],u["stock"],u["iduser"],u["image"]);
+           AppData.list.add(pr);
+
+         }
       
       
 
  return map;
+
+    }on DioError catch(e){
+      print(e);
+      return e.error;
+    }
+  }
+
+  Future<dynamic> getAllProduct()async {
+    final url ="/produit/";
+    try{
+            baseDio.options.headers['Content-Type']='application/json';
+                  Response <String> response = await baseDio.get(this.baseUrl+url);
+                  List<dynamic> map =jsonDecode(response.data);
+                  for (var u in map ){
+                    Product p =Product(u["id"],u["nom"],u["category"],u["description"],u["prix"],u["stock"],u["iduser"],u["image"],false,false);
+                    AppData.productList.add(p);
+                  }
+ return map;
+
 
     }on DioError catch(e){
       print(e);
@@ -93,7 +133,7 @@ class ApiClient {
 
     final url ="/user/byemail/";
     try {
-      email="hh@gmail.com";
+      
 String result;
       baseDio.options.headers['Content-Type']='application/json';
       Response <String> response = await baseDio.get(this.baseUrl+url+email);

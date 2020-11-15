@@ -1,6 +1,7 @@
 import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/data/api_client.dart';
+import 'package:flutter_ecommerce_app/src/model/data.dart';
 import 'package:flutter_ecommerce_app/src/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -61,13 +62,16 @@ class LoginState extends State<Login> {
             padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
             onPressed: () async {
                 ApiClient apiClient = ApiClient();
-                 getuser =await apiClient.getUserByemail("hh@gmail.com");
-                 List <dynamic> map =await apiClient.getMyproduct(1);
+                 getuser =await apiClient.getUserByemail(emailController.text);
+                 List<dynamic> allproduct=await apiClient.getAllProduct();
                  dynamic user =getuser[0];
               if(emailController.text ==user["email"]  && passwordController.text ==user["mdp"]){
                  SharedPreferences prefs = await SharedPreferences.getInstance();
                  prefs.setInt("iduser", user["id"]);
-                
+                 prefs.setString("filename", user["image"]);
+                 AppData.image=user["image"];
+                                 List <dynamic> map =await apiClient.getMyproduct(user["iduser"]);
+
  Navigator.of(context).pushNamedAndRemoveUntil(routes.MainPageRoute, (route) => false);
 
               }

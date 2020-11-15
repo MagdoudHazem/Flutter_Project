@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
 import 'package:flutter_ecommerce_app/src/data/api_client.dart';
+import 'package:flutter_ecommerce_app/src/model/data.dart';
+import 'package:flutter_ecommerce_app/src/model/produit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -419,8 +421,13 @@ class MapScreenState extends State<AddProduct>
                         "image":base64Encode(_image.readAsBytesSync()),
                         "filename":_image.path.split('/').last
                     };
+                        print(product["filename"]);
+                       /* int id =AppData.list.length;
+                        print(AppData.list.toString());
+                        print(AppData.list[id-1].toString());*/
                         
-                   
+ Produit pr =  Produit(2,product["nom"],product["category"],product["description"],product["prix"],int.parse(product["stock"]),int.parse(product["iduser"]),product["filename"]);
+AppData.list.add(pr);
                        bool isSaved = await apiClient.saveProduct(product, _image);
                     //  print("isSaved :: ${isSaved}");
                   }

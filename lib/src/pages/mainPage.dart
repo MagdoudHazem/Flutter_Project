@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/model/data.dart';
 import 'package:flutter_ecommerce_app/src/pages/NavDrawer.dart';
 import 'package:flutter_ecommerce_app/src/pages/home_page.dart';
 import 'package:flutter_ecommerce_app/src/pages/myproduct.dart';
@@ -9,12 +10,16 @@ import 'package:flutter_ecommerce_app/src/widgets/BottomNavigationBar/bottom_nav
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:flutter_ecommerce_app/src/widgets/extentions.dart';
 import 'package:flutter_ecommerce_app/src/config/route.dart' as routes;
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.title}) : super(key: key);
 
   final String title;
+  final String image="" ;
+
+
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -27,13 +32,21 @@ class _MainPageState extends State<MainPage> {
     super.initState();
         bodywidget=MyHomePage();
 
+        
+
   }
   bool isHomePageSelected = true;
   bool ismyproduct =false;
+
+ 
+
   final GlobalKey<ScaffoldState> scaffoldkey =GlobalKey();
   Widget bodywidget;
-  Widget _appBar() {
+  Widget _appBar()  {
+                                          
+
     return Container(
+      
       padding: AppTheme.padding,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -54,7 +67,9 @@ class _MainPageState extends State<MainPage> {
                       spreadRadius: 10),
                 ],
               ),
-              child: Image.asset("assets/user.png"),
+
+              child: Image.network('http://192.168.1.7:3000/'+AppData.image,fit: BoxFit.contain,
+        width: 50,),
             ),
           ).ripple(() {}, borderRadius: BorderRadius.all(Radius.circular(13)))
         ],

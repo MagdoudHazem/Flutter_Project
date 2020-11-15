@@ -4,16 +4,19 @@ import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:flutter_ecommerce_app/src/widgets/extentions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductDetailPage extends StatefulWidget {
   ProductDetailPage({Key key}) : super(key: key);
+  
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin  {
+
   AnimationController controller;
   Animation<double> animation;
   @override
@@ -33,6 +36,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   bool isLiked = true;
+
   Widget _appBar() {
     return Container(
       padding: AppTheme.padding,
@@ -110,14 +114,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       },
       animation: animation,
       child: Stack(
+        
         alignment: Alignment.bottomCenter,
         children: <Widget>[
-          TitleText(
-            text: "AIP",
-            fontSize: 160,
-            color: LightColor.lightGrey,
-          ),
-          Image.asset('assets/show_1.png')
+         // TitleText(
+           // text: "Product",
+           // fontSize: 160,
+         //   color: LightColor.lightGrey,
+        //  ),
+          Image.network('http://192.168.1.7:3000/'+AppData.product.image)
         ],
       ),
     );
@@ -164,6 +169,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _detailWidget() {
+    
     return DraggableScrollableSheet(
       maxChildSize: .8,
       initialChildSize: .53,
@@ -200,7 +206,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      TitleText(text: "NIKE AIR MAX 200", fontSize: 25),
+                      TitleText(text: AppData.product.nom, fontSize: 25),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
@@ -213,7 +219,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                 color: LightColor.red,
                               ),
                               TitleText(
-                                text: "240",
+                                text: AppData.product.prix,
                                 fontSize: 25,
                               ),
                             ],
@@ -261,17 +267,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         TitleText(
-          text: "Available Size",
+          text: "Available Stock",
           fontSize: 14,
         ),
         SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            _sizeWidget("US 6"),
-            _sizeWidget("US 7", isSelected: true),
-            _sizeWidget("US 8"),
-            _sizeWidget("US 9"),
+            _sizeWidget("Stock :"),
+            _sizeWidget(AppData.product.stock.toString(), isSelected: true),
+           
           ],
         )
       ],
@@ -303,30 +308,23 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         TitleText(
-          text: "Available Size",
+          text: "Available Product",
           fontSize: 14,
         ),
         SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            _colorWidget(LightColor.yellowColor, isSelected: true),
+            _colorWidget(LightColor.green, isSelected: true),
             SizedBox(
               width: 30,
             ),
-            _colorWidget(LightColor.lightBlue),
-            SizedBox(
-              width: 30,
-            ),
-            _colorWidget(LightColor.black),
-            SizedBox(
-              width: 30,
-            ),
+          
             _colorWidget(LightColor.red),
             SizedBox(
               width: 30,
             ),
-            _colorWidget(LightColor.skyBlue),
+            
           ],
         )
       ],
@@ -352,18 +350,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         TitleText(
-          text: "Available Size",
+          text: "Description",
           fontSize: 14,
         ),
         SizedBox(height: 20),
-        Text(AppData.description),
+        Text(AppData.product.description),
       ],
     );
   }
 
   FloatingActionButton _flotingButton() {
     return FloatingActionButton(
-      onPressed: () {},
+      onPressed: () {
+        print ('produit ajouter au panier');
+        AppData.cartList.add(AppData.product);
+      },
       backgroundColor: LightColor.orange,
       child: Icon(Icons.shopping_basket,
           color: Theme.of(context).floatingActionButtonTheme.backgroundColor),
